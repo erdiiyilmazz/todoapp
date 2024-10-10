@@ -1,0 +1,10 @@
+app:
+  jwtSecret: 123123
+  jwtExpirationInMs: 1000
+
+config:
+  couchbase:
+    host: localhost
+    username: Administrator
+    password: password
+    bucketName: todo

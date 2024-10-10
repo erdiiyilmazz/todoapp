@@ -2,7 +2,9 @@ package com.erdi.todoapp.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class CouchbaseConfig extends AbstractCouchbaseConfiguration{
 
     @Value("${config.couchbase.host}")
