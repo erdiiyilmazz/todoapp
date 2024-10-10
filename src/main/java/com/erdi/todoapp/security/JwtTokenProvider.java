@@ -9,8 +9,11 @@ import org.springframework.stereotype.Component;
 
 import com.erdi.todoapp.model.entity.User;
 
-import java.security.Key;
 import java.util.Date;
+import java.security.Key;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +26,11 @@ public class JwtTokenProvider {
     private int jwtExpirationInMs;
 
     private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
 
     public String generateToken(Authentication authentication) {
         User userPrincipal = (User) authentication.getPrincipal();
