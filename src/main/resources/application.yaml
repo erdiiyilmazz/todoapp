@@ -1,10 +1,20 @@
 app:
   jwtSecret: 123123
-  jwtExpirationInMs: 1000
+  jwtExpirationInMs: 6000000
 
-config:
+spring:
   couchbase:
-    host: localhost
+    connection-string: couchbase://localhost
     username: Administrator
     password: password
-    bucketName: todo
+    bucket-name: todo
+
+  data:
+    couchbase:
+      auto-index: true
+
+logging:
+  level:
+    com.erdi.todoapp: DEBUG
+    org.springframework.data.couchbase: DEBUG
+    com.couchbase.client: DEBUG

@@ -7,16 +7,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CouchbaseConfig extends AbstractCouchbaseConfiguration{
 
-    @Value("${config.couchbase.host}")
+    @Value("${spring.couchbase.connection-string}")
     private String host;
 
-    @Value("${config.couchbase.username}")
+    @Value("${spring.couchbase.username}")
     private String username;
 
-    @Value("${config.couchbase.password}")
+    @Value("${spring.couchbase.password}")
     private String password;
 
-    @Value("${config.couchbase.bucketName}")
+    @Value("${spring.couchbase.bucket-name}")
     private String bucketName;
 
     @Override

@@ -1,5 +1,6 @@
 package com.erdi.todoapp.model.entity;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 import org.springframework.data.annotation.Id;
@@ -34,14 +35,14 @@ public class Item {
     private String content;
 
     @Field
-    private boolean isCompleted;
-
-    @Field
-    private boolean isDeleted;
+    private boolean deleted;
 
     @Field
     private Date createDate;
 
     @Field
     private Date completeDate;
+
+    @Field
+    private Date updateDate;
 }

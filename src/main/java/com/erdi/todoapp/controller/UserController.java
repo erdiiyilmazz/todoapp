@@ -1,12 +1,9 @@
 package com.erdi.todoapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.erdi.todoapp.dto.request.LoginRequestDto;
 import com.erdi.todoapp.dto.request.RegisterRequestDto;
@@ -15,9 +12,7 @@ import com.erdi.todoapp.model.entity.User;
 import com.erdi.todoapp.service.UserService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/users")
