@@ -34,14 +34,14 @@ public class Item {
     private String content;
 
     @Field
-    private boolean isCompleted;
-
-    @Field
-    private boolean isDeleted;
+    private boolean deleted;
 
     @Field
     private Date createDate;
 
     @Field
     private Date completeDate;
+
+    @Field
+    private Date updateDate;
 }
