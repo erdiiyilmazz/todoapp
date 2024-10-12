@@ -1,6 +1,5 @@
 package com.erdi.todoapp.model.entity;
 
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 import org.springframework.data.annotation.Id;

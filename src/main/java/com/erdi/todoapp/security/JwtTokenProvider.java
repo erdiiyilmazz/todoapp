@@ -39,14 +39,14 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .setSubject(userPrincipal.getId())
+                .setSubject(userPrincipal.getUsername()) // Use username instead of ID
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(key)
                 .compact();
     }
 
-    public String getUserIdFromJWT(String token) {
+    public String getUsernameFromJWT(String token) { // Rename this method
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

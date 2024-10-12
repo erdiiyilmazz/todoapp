@@ -7,9 +7,6 @@ import org.springframework.stereotype.Repository;
 import com.erdi.todoapp.model.entity.User;
 
 @Repository
-public interface UserRepository extends CouchbaseRepository<User, String>{
+public interface UserRepository extends CouchbaseRepository<User, String> {
     Optional<User> findByUsername(String username);
-
-    Optional<User> findByUsernameAndPassword(String username, String password);
-
 }

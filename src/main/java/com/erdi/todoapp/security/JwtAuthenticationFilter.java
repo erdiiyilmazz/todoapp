@@ -2,11 +2,12 @@ package com.erdi.todoapp.security;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.erdi.todoapp.service.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,9 +24,8 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
-
+    private final CustomUserDetailsService customUserDetailsService;
     private final HandlerExceptionResolver handlerExceptionResolver;
-
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, 
@@ -34,27 +34,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     throws ServletException, IOException {
         try {
             final Optional<String> token = extractTokenFromRequest(request);
-            if (token.isPresent()) {
-                SecurityContextHolder.getContext().setAuthentication(getAuthenticationFromToken(token.get()));
+            if (token.isPresent() && tokenProvider.validateToken(token.get())) {
+                String username = tokenProvider.getUsernameFromJWT(token.get()); // Use username
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authentication = 
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 SecurityContextHolder.clearContext();
             }
             filterChain.doFilter(request, response);
-
         } catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
     }
 
-    private Authentication getAuthenticationFromToken(String token) {
-
-        final String username = tokenProvider.getUserIdFromJWT(token);
-
-        return new UsernamePasswordAuthenticationToken(username, null, null);
-    }
-
     private Optional<String> extractTokenFromRequest(HttpServletRequest request) {
-
         final String bearerPrefix = "Bearer ";
         final String authHeaderKey = "Authorization";
 

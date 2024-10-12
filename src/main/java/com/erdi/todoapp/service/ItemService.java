@@ -1,15 +1,14 @@
 package com.erdi.todoapp.service;
 
 import java.util.Date;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-
 import com.erdi.todoapp.dto.request.CreateItemDto;
 import com.erdi.todoapp.dto.response.ItemDto;
 import com.erdi.todoapp.model.entity.Item;
 import com.erdi.todoapp.model.entity.User;
 import com.erdi.todoapp.repository.ItemRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,6 +28,13 @@ public class ItemService {
         
         Item savedItem = itemRepository.save(item);
         return convertToDto(savedItem);
+    }
+
+    public List<ItemDto> getAllItems(User user) {
+        List<Item> items = itemRepository.findByUserIdAndDeletedFalse(user.getUsername());
+        return items.stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
     }
 
     private ItemDto convertToDto(Item item) {
