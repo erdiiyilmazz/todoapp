@@ -18,3 +18,9 @@ logging:
     com.erdi.todoapp: DEBUG
     org.springframework.data.couchbase: DEBUG
     com.couchbase.client: DEBUG
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

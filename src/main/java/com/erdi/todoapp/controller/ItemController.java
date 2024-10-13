@@ -12,15 +12,20 @@ import com.erdi.todoapp.service.ItemService;
 import jakarta.validation.Valid;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/items")
+@Tag(name = "Items", description = "Todo Item API")
 public class ItemController {
     private final ItemService itemService;
 
     public ItemController(ItemService itemService) {
         this.itemService = itemService;
     }
-
+    
+    @Operation(description = "Create a new todo item")
     @PostMapping
     public ResponseEntity<ItemDto> createItem(@Valid @RequestBody CreateItemDto createItemDto, 
                                               @AuthenticationPrincipal User user) {
@@ -28,18 +33,21 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
     }
 
+    @Operation(description = "Get all todo items")
     @GetMapping
     public ResponseEntity<List<ItemDto>> getAllItems(@AuthenticationPrincipal User user) {
         List<ItemDto> items = itemService.getAllItems(user);
         return ResponseEntity.ok(items);
     }
 
+    @Operation(description = "Get a todo item by id")
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemDto> getItem(@PathVariable String itemId, @AuthenticationPrincipal User user) {
         ItemDto item = itemService.getItem(itemId, user);
         return ResponseEntity.ok(item);
     }
 
+    @Operation(description = "Update a todo item")
     @PutMapping("/{itemId}")
     public ResponseEntity<ItemDto> updateItem(@PathVariable String itemId, 
                                               @Valid @RequestBody UpdateItemDto updateItemDto, 
@@ -48,6 +56,7 @@ public class ItemController {
         return ResponseEntity.ok(updatedItem);
     }
 
+    @Operation(description = "Delete a todo item")
     @DeleteMapping("/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable String itemId, @AuthenticationPrincipal User user) {
         itemService.deleteItem(itemId, user);
