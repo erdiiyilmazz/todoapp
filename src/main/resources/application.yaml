@@ -4,10 +4,10 @@ app:
 
 spring:
   couchbase:
-    connection-string: ${SPRING_COUCHBASE_CONNECTION-STRING:couchbase://couchbase}
-    username: ${SPRING_COUCHBASE_USERNAME:Administrator}
-    password: ${SPRING_COUCHBASE_PASSWORD:password}
-    bucket-name: ${SPRING_COUCHBASE_BUCKET-NAME:todo}
+    connection: couchbase://localhost
+    username: Administrator
+    password: password
+    bucket: todo
     env:
       io:
         enableDnsSrv: false

@@ -1,55 +1,55 @@
-#!/bin/bash
 set -e
 
-until curl -s http://localhost:8091/pools/default > /dev/null; do
+until curl -s http://localhost:8091/pools > /dev/null; do
     echo "Waiting for Couchbase to start..."
     sleep 5
 done
 
-echo "Couchbase is up. Initializing..."
+if ! couchbase-cli server-list -c localhost:8091 -u Administrator -p password > /dev/null 2>&1; then
+    echo "Initializing Couchbase cluster..."
+    couchbase-cli cluster-init -c localhost \
+        --cluster-username Administrator \
+        --cluster-password password \
+        --services data,index,query \
+        --cluster-ramsize 512 \
+        --cluster-index-ramsize 256 \
+        --index-storage-setting default
+else
+    echo "Cluster is already initialized."
+fi
 
-/opt/couchbase/bin/couchbase-cli cluster-init -c localhost:8091 \
-    --cluster-username Administrator \
-    --cluster-password password \
-    --services data,index,query \
-    --cluster-ramsize 512 \
-    --cluster-index-ramsize 256 \
-    --cluster-fts-ramsize 256 \
-    --index-storage-setting default
+if ! couchbase-cli bucket-list -c localhost:8091 -u Administrator -p password | grep -q "todo"; then
+    echo "Creating 'todo' bucket..."
+    couchbase-cli bucket-create -c localhost \
+        --username Administrator \
+        --password password \
+        --bucket todo \
+        --bucket-type couchbase \
+        --bucket-ramsize 128
+else
+    echo "Bucket 'todo' already exists."
+fi
 
-echo "Cluster initialized. Waiting for services to start..."
-sleep 30
-
-echo "Creating bucket..."
-/opt/couchbase/bin/couchbase-cli bucket-create -c localhost:8091 \
-    -u Administrator \
-    -p password \
-    --bucket todo \
-    --bucket-type couchbase \
-    --bucket-ramsize 128
-
-echo "Bucket created. Waiting for bucket to be ready..."
-sleep 20
+sleep 10
 
 echo "Creating primary index..."
-for i in {1..5}; do
-    if /opt/couchbase/bin/cbq -e http://localhost:8091 -u Administrator -p password \
-        -s "CREATE PRIMARY INDEX ON \`todo\`" > /dev/null 2>&1; then
-        echo "Primary index created successfully."
+max_retries=5
+retry_interval=10
+for i in $(seq 1 $max_retries); do
+    if echo "CREATE PRIMARY INDEX ON \`todo\`;" | cbq -e http://localhost:8091 -u Administrator -p password > /dev/null 2>&1; then
+        echo "Primary index created successfully"
         break
     else
-        echo "Attempt $i to create primary index failed. Retrying in 10 seconds..."
-        sleep 10
+        echo "Failed to create primary index. Retrying in $retry_interval seconds..."
+        sleep $retry_interval
     fi
 done
 
+if [ $i -eq $max_retries ]; then
+    echo "Failed to create primary index after $max_retries attempts"
+    exit 1
+fi
+
 echo "Couchbase initialization completed."
-
-until curl -s http://localhost:8091/pools/default/buckets/todo > /dev/null; do
-    echo "Waiting for 'todo' bucket to be accessible..."
-    sleep 5
-done
-
-touch /opt/couchbase/var/lib/couchbase/init_complete
 
 tail -f /dev/null

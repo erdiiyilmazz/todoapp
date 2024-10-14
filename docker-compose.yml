@@ -2,22 +2,24 @@ version: '3.8'
 
 services:
   app:
+    container_name: app
     build: .
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       couchbase:
         condition: service_healthy
     environment:
-      - SPRING_COUCHBASE_CONNECTION-STRING=couchbase://couchbase
+      - SPRING_COUCHBASE_CONNECTION=couchbase
       - SPRING_COUCHBASE_USERNAME=Administrator
       - SPRING_COUCHBASE_PASSWORD=password
-      - SPRING_COUCHBASE_BUCKET-NAME=todo
+      - SPRING_COUCHBASE_BUCKET=todo
     networks:
       - app-network
     command: ["/wait-for-couchbase.sh", "couchbase", "java", "-jar", "app.jar"]
 
   couchbase:
+    container_name: couchbase
     image: couchbase:enterprise-6.6.0
     platform: linux/amd64
     ports:
@@ -33,11 +35,11 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "test", "-f", "/opt/couchbase/var/lib/couchbase/init_complete"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD", "/opt/couchbase/bin/couchbase-cli", "server-info", "-c", "localhost:8091", "-u", "Administrator", "-p", "password"]
+      interval: 30s
+      timeout: 10s
       retries: 20
-      start_period: 120s
+      start_period: 180s
 
 networks:
   app-network:
