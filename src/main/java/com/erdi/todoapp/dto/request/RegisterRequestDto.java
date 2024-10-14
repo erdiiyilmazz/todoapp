@@ -13,16 +13,16 @@ import lombok.Builder;
 @NoArgsConstructor
 @Builder
 public class RegisterRequestDto{
-        @NotBlank 
+        @NotBlank(message = "Username is required")
         private String username;
 
-        @NotBlank 
-        @Email
-        private String email;
-
-        @NotBlank 
+        @NotBlank(message = "Password is required")
         private String password;
 
-        @NotBlank 
+        @NotBlank(message = "Password repeat is required")
         private String passwordRepeat;
+
+        @NotBlank(message = "Email is required")
+        @Email
+        private String email;
 }

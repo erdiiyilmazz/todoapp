@@ -27,7 +27,7 @@ public class UserController {
 
     @Operation(description = "Register a new user")
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDto> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
         User user = userService.register(registerRequestDto);
         LoginRequestDto loginRequest = new LoginRequestDto();
         loginRequest.setUsername(user.getUsername());

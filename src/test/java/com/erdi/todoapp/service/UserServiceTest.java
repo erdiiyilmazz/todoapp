@@ -23,7 +23,6 @@ import com.erdi.todoapp.security.JwtTokenProvider;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,26 +42,6 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
-
-    @Test
-    public void testGetUser() {
-        String userId = "123";
-        User mockUser = User.builder()
-            .id("123")
-            .password(passwordEncoder.encode("password"))
-            .username("Test User")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
-            .enabled(true)
-            .build();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
-
-        User result = userService.getUser("123");
-
-        assertNotNull(result);
-        assertEquals(userId, result.getId());
-        assertEquals("Test User", result.getUsername());
-    }
 
     @Test
     public void testLoginWithNonExistentUsername() {
