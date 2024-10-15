@@ -5,10 +5,10 @@ import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class CouchbaseConfig extends AbstractCouchbaseConfiguration{
+public class CouchbaseConfig extends AbstractCouchbaseConfiguration {
 
-    @Value("${spring.couchbase.connection}")
-    private String host;
+    @Value("${spring.couchbase.connection-string}")
+    private String connectionString;
 
     @Value("${spring.couchbase.username}")
     private String username;
@@ -16,12 +16,12 @@ public class CouchbaseConfig extends AbstractCouchbaseConfiguration{
     @Value("${spring.couchbase.password}")
     private String password;
 
-    @Value("${spring.couchbase.bucket}")
+    @Value("${spring.data.couchbase.bucket-name}")
     private String bucketName;
 
     @Override
     public String getConnectionString() {
-        return host;
+        return connectionString;
     }
 
     @Override

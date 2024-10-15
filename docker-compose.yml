@@ -1,49 +1,36 @@
 version: '3.8'
 
 services:
+  couchbase:
+    image: couchbase:latest
+    platform: linux/arm64/v8
+    ports:
+      - "28091-28094:8091-8094"
+      - "21210:11210"
+    volumes:
+      - ./couchbase/init-couchbase.sh:/opt/couchbase/init-couchbase.sh
+    command: sh -c "/opt/couchbase/init-couchbase.sh & /entrypoint.sh couchbase-server"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8091/pools/default"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 90s
+
   app:
-    container_name: app
     build: .
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
-      couchbase:
-        condition: service_healthy
+      - couchbase
+    restart: always  
     environment:
-      - SPRING_COUCHBASE_CONNECTION=couchbase
+      - SPRING_COUCHBASE_CONNECTION_STRING=couchbase://couchbase
       - SPRING_COUCHBASE_USERNAME=Administrator
       - SPRING_COUCHBASE_PASSWORD=password
-      - SPRING_COUCHBASE_BUCKET=todo
-    networks:
-      - app-network
-    command: ["/wait-for-couchbase.sh", "couchbase", "java", "-jar", "app.jar"]
-
-  couchbase:
-    container_name: couchbase
-    image: couchbase:enterprise-6.6.0
-    platform: linux/amd64
-    ports:
-      - "28091-28096:8091-8096"
-      - "21210-21211:11210-11211"
-    volumes:
-      - couchbase_data:/opt/couchbase/var
-      - ./couchbase/init-couchbase.sh:/opt/couchbase/init-couchbase.sh
-    environment:
-      - COUCHBASE_ADMINISTRATOR_USERNAME=Administrator
-      - COUCHBASE_ADMINISTRATOR_PASSWORD=password
-    command: sh -c "/entrypoint.sh couchbase-server & sleep 15 && /opt/couchbase/init-couchbase.sh"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "/opt/couchbase/bin/couchbase-cli", "server-info", "-c", "localhost:8091", "-u", "Administrator", "-p", "password"]
-      interval: 30s
-      timeout: 10s
-      retries: 20
-      start_period: 180s
+      - SPRING_DATA_COUCHBASE_BUCKET_NAME=todo
+    command: ["/bin/sh", "-c", "curl -v http://couchbase:8091/pools/default && java -jar app.jar"]
 
 networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  couchbase_data:
+  default:
+    name: app-network
