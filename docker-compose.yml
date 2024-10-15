@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  couchbase:
+    image: couchbase:latest
+    platform: linux/arm64/v8
+    ports:
+      - "28091-28094:8091-8094"
+      - "21210:11210"
+    volumes:
+      - ./couchbase/init-couchbase.sh:/opt/couchbase/init-couchbase.sh
+    command: sh -c "/opt/couchbase/init-couchbase.sh & /entrypoint.sh couchbase-server"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8091/pools/default"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 90s
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - couchbase
+    restart: always  
+    environment:
+      - SPRING_COUCHBASE_CONNECTION_STRING=couchbase://couchbase
+      - SPRING_COUCHBASE_USERNAME=Administrator
+      - SPRING_COUCHBASE_PASSWORD=password
+      - SPRING_DATA_COUCHBASE_BUCKET_NAME=todo
+    command: ["/bin/sh", "-c", "curl -v http://couchbase:8091/pools/default && java -jar app.jar"]
+
+networks:
+  default:
+    name: app-network

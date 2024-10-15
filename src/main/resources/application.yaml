@@ -4,20 +4,13 @@ app:
 
 spring:
   couchbase:
-    connection-string: couchbase://localhost
+    connection-string: couchbase://couchbase
     username: Administrator
     password: password
-    bucket-name: todo
-
   data:
     couchbase:
+      bucket-name: todo
       auto-index: true
-
-logging:
-  level:
-    com.erdi.todoapp: DEBUG
-    org.springframework.data.couchbase: DEBUG
-    com.couchbase.client: DEBUG
 
 springdoc:
   api-docs:
