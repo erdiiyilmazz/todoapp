@@ -28,7 +28,7 @@ RESTful API for managing todo items.
    ```
 ## Run the app with dependencies
 
-   Run unit tests: 
+   Build and run on docker container: 
    ```
    docker-compose up --build
    ```
